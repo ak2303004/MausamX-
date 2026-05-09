@@ -131,8 +131,8 @@ searchinput.addEventListener("keydown", async function (event) {
   }
 });
 
-city("London");
+city("Kedarnath");
 city("Kolkata");
-city("New York");
+city("Puri");
 city("Mumbai");
 city("Tokyo");
