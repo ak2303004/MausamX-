@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Real-time earthquake alerts powered by USGS data – part of MausamX." />
+  <link rel="icon" type="png" href="img/icon.png" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Page Styles -->
+  <link rel="stylesheet" href="css/earthquake.css" />
+  <title>MausamX – Earthquake Alerts</title>
+</head>
+
+<body>
+
+  <!-- ══ Top Navigation ══════════════════════════════════════ -->
+  <header class="mx-header">
+    <div class="mx-header-inner">
+      <div class="mx-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#ffffff" fill="none"
+          stroke="#ffffff" stroke-width="3" stroke-linecap="round">
+          <path
+            d="M9.0784 14.9999L7.30434 17.6837C7.06684 18.043 6.94808 18.2226 7.02165 18.3612C7.09522 18.4999 7.30931 18.4999 7.73747 18.4999H9.26253C9.69069 18.4999 9.90478 18.4999 9.97835 18.6385C10.0519 18.7772 9.93316 18.9568 9.69566 19.3161L7.9216 21.9999"
+            stroke-linejoin="round" />
+          <path d="M16 19.9999L15 21.9999" stroke-linejoin="round" />
+          <path d="M13 19.9999L12 21.9999" stroke-linejoin="round" />
+          <path
+            d="M2.95939 9.19373C2.21865 6.47179 3.85922 3.67397 6.6237 2.94463M2.95939 9.19373L2 9.44684M2.95939 9.19373C3.14359 9.87059 3.4577 10.479 3.86823 11M6.6237 2.94463L6.36663 2M6.6237 2.94463C8.66673 2.40563 10.7518 3.14719 12 4.66961M3.4765 5.32297L2.4644 4.74628M11.1407 2.45725L10.557 3.45494" />
+          <path
+            d="M17.4776 10.9008C17.485 10.9007 17.4925 10.9007 17.5 10.9007C19.9853 10.9007 22 12.8821 22 15.3263C22 17.2532 20.7478 18.8925 19 19.5M17.4776 10.9008C17.4924 10.7388 17.5 10.5748 17.5 10.409C17.5 7.42169 15.0376 5 12 5C9.12324 5 6.76233 7.17208 6.52042 9.9396M17.4776 10.9008C17.3753 12.0165 16.9286 13.0344 16.2428 13.8511M6.52042 9.9396C3.98398 10.177 2 12.2779 2 14.8345C2 16.4433 2.78555 17.8716 4 18.7687M6.52042 9.9396C6.67826 9.92483 6.83823 9.91727 7 9.91727C8.12582 9.91727 9.16474 10.2832 10.0005 10.9007"
+            stroke-linejoin="round" />
+        </svg> MausamX
+      </div>
+      <nav class="mx-nav">
+        <a href="index.html" class="mx-nav-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24"
+            height="24" color="#ffffff" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path
+              d="M3 11.9896V14.5C3 17.7998 3 19.4497 4.02513 20.4749C5.05025 21.5 6.70017 21.5 10 21.5H14C17.2998 21.5 18.9497 21.5 19.9749 20.4749C21 19.4497 21 17.7998 21 14.5V11.9896C21 10.3083 21 9.46773 20.6441 8.74005C20.2882 8.01237 19.6247 7.49628 18.2976 6.46411L16.2976 4.90855C14.2331 3.30285 13.2009 2.5 12 2.5C10.7991 2.5 9.76689 3.30285 7.70242 4.90855L5.70241 6.46411C4.37533 7.49628 3.71179 8.01237 3.3559 8.74005C3 9.46773 3 10.3083 3 11.9896Z" />
+            <path
+              d="M15 21.5V16.5C15 15.0858 15 14.3787 14.5607 13.9393C14.1213 13.5 13.4142 13.5 12 13.5C10.5858 13.5 9.87868 13.5 9.43934 13.9393C9 14.3787 9 15.0858 9 16.5V21.5" />
+          </svg><span>HOME</span></a>
+        <a href="world.html" class="mx-nav-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24"
+            height="24" color="#ffffff" fill="none" stroke="#ffffff" stroke-width="3" stroke-linejoin="round">
+            <path
+              d="M12 22C6.47715 22 2 17.5228 2 12C2 9.20746 3.14465 6.68227 4.99037 4.86802M12 22C11.037 21.2864 11.1907 20.4555 11.6738 19.6247C12.4166 18.3474 12.4166 18.3474 12.4166 16.6444C12.4166 14.9414 13.4286 14.1429 17 14.8571C18.6047 15.1781 19.7741 12.9609 21.8573 13.693M12 22C16.9458 22 21.053 18.4096 21.8573 13.693M21.8573 13.693C21.9511 13.1427 22 12.5771 22 12C22 7.11857 18.5024 3.05405 13.8766 2.17579M13.8766 2.17579C14.3872 3.11599 14.1816 4.23551 13.1027 4.66298C11.3429 5.3603 12.6029 6.64343 11.1035 7.4356C10.1038 7.96372 8.6044 7.83152 7.10496 6.24716C6.31517 5.41264 5.83966 4.95765 4.99037 4.86802M13.8766 2.17579C13.2687 2.06039 12.6414 2 12 2C9.26969 2 6.79495 3.09421 4.99037 4.86802" />
+          </svg> <span>GLOBE</span></a>
+        <a href="earthquake.html" class="mx-nav-link active"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+            width="24" height="24" color="#ffffff" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path
+              d="M13.9248 21H10.0752C5.44476 21 3.12955 21 2.27636 19.4939C1.42317 17.9879 2.60736 15.9914 4.97574 11.9985L6.90057 8.75333C9.17559 4.91778 10.3131 3 12 3C13.6869 3 14.8244 4.91777 17.0994 8.75332L19.0243 11.9985C21.3926 15.9914 22.5768 17.9879 21.7236 19.4939C20.8704 21 18.5552 21 13.9248 21Z" />
+            <path d="M12 17V13" />
+            <path
+              d="M12 9.25H12.125M12.25 9.25C12.25 9.11193 12.1381 9 12 9C11.8619 9 11.75 9.11193 11.75 9.25C11.75 9.38807 11.8619 9.5 12 9.5C12.1381 9.5 12.25 9.38807 12.25 9.25Z" />
+          </svg><span>EARTHQUAKES</span></a>
+      </nav>
+      <!-- <div class="mx-header-right">
+        <div class="mx-avatar"><i class="fa-solid fa-user"></i></div>
+      </div> -->
+    </div>
+  </header>
+
+  <!-- ══ Main Content ════════════════════════════════════════ -->
+  <main class="eq-main">
+    <div class="eq-container">
+
+      <!-- ── Header ─────────────────────────────────── -->
+      <div class="eq-header">
+        <div class="eq-header-left">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" color="#ffffff" fill="none"
+            stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M13.9248 21H10.0752C5.44476 21 3.12955 21 2.27636 19.4939C1.42317 17.9879 2.60736 15.9914 4.97574 11.9985L6.90057 8.75333C9.17559 4.91778 10.3131 3 12 3C13.6869 3 14.8244 4.91777 17.0994 8.75332L19.0243 11.9985C21.3926 15.9914 22.5768 17.9879 21.7236 19.4939C20.8704 21 18.5552 21 13.9248 21Z" />
+            <path d="M12 9V13" />
+            <path
+              d="M12.125 16.75H12M12.25 16.75C12.25 16.8881 12.1381 17 12 17C11.8619 17 11.75 16.8881 11.75 16.75C11.75 16.6119 11.8619 16.5 12 16.5C12.1381 16.5 12.25 16.6119 12.25 16.75Z" />
+          </svg>
+          <h1>Earthquake Alerts</h1>
+        </div>
+        <div class="eq-header-right">
+          <!-- Refresh countdown badge -->
+          <div class="eq-refresh-badge" id="eq-refresh-badge">
+            <i class="fa-solid fa-rotate"></i>
+            <span id="eq-countdown">120s</span>
+          </div>
+          <!-- Manual refresh button -->
+          <button class="eq-refresh-btn" id="eq-refresh-btn" title="Refresh now">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" color="#ffffff"
+              fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M20.9451 13C20.9814 12.6717 21 12.338 21 12C21 7.02944 16.9706 3 12 3C9.17273 3 6.64996 4.30367 5 6.34267M3.05493 11C3.01863 11.3283 3 11.662 3 12C3 16.9706 7.02944 21 12 21C14.8273 21 17.35 19.6963 19 17.6573" />
+              <path d="M8 7H7C5.58579 7 4.87868 7 4.43934 6.56066C4 6.12132 4 5.41421 4 4V3" />
+              <path d="M16 17H17C18.4142 17 19.1213 17 19.5607 17.4393C20 17.8787 20 18.5858 20 20V21" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Search Bar ───────────────────────────────── -->
+      <div class="eq-search-section" id="eq-search-section">
+        <div class="eq-search-wrap">
+          <!-- Search input -->
+          <div class="eq-search-box" id="eq-search-box">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" color="#ffffff"
+              fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 17L21 21" />
+              <path
+                d="M19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19C15.4183 19 19 15.4183 19 11Z" />
+            </svg>
+            <input type="text" id="eq-search-input" class="eq-search-input"
+              placeholder="Search by city, region or country…" autocomplete="off"
+              aria-label="Search earthquake location" />
+            <!-- Clear button -->
+            <button class="eq-search-clear" id="eq-search-clear" title="Clear search" style="display:none;">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          <!-- Voice search button -->
+          <button type="button" id="voice-btn" title="Search by voice" style="width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--border); background: var(--card-2); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;">
+            <svg id="voice-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"
+              fill="none" stroke="#9898b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: auto;">
+              <rect x="9" y="2" width="6" height="11" rx="3"/>
+              <path d="M5 10a7 7 0 0 0 14 0"/>
+              <line x1="12" y1="17" x2="12" y2="21"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+            </svg>
+          </button>
+
+          <!-- Radius selector (visible in search mode) -->
+          <div class="eq-radius-wrap" id="eq-radius-wrap">
+            <label for="eq-radius-select"><i class="fa-solid fa-circle-dot"></i> Radius:</label>
+            <select id="eq-radius-select">
+              <option value="100">100 km</option>
+              <option value="250">250 km</option>
+              <option value="500" selected>500 km</option>
+              <option value="1000">1 000 km</option>
+              <option value="2000">2 000 km</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Autocomplete suggestion dropdown -->
+        <ul class="eq-suggestions" id="eq-suggestions" role="listbox" aria-label="Location suggestions"></ul>
+
+        <!-- Search-mode active banner -->
+        <div class="eq-search-banner" id="eq-search-banner" style="display:none;">
+          <i class="fa-solid fa-location-crosshairs"></i>
+          <span id="eq-search-banner-text">Showing earthquakes near …</span>
+          <button class="eq-back-btn" id="eq-back-btn" title="Back to global view">
+            <i class="fa-solid fa-globe"></i> Global View
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Filter Bar ──────────────────────────────── -->
+      <div class="eq-filter-bar">
+        <label for="eq-range-select">
+          <i class="fa-solid fa-calendar-days"></i> Period:
+        </label>
+        <select id="eq-range-select">
+          <option value="hour">Past Hour</option>
+          <option value="day" selected>Past 24 Hours</option>
+          <option value="week">Past 7 Days</option>
+          <option value="month">Past 30 Days</option>
+          <option value="3month">Past 3 Months</option>
+          <option value="6month">Past 6 Months</option>
+          <option value="year">Past 1 Year</option>
+        </select>
+
+        <label for="eq-mag-select">
+          <i class="fa-solid fa-gauge-high"></i> Min Mag:
+        </label>
+        <select id="eq-mag-select">
+          <option value="all">All</option>
+          <option value="1.0">1.0+</option>
+          <option value="2.5" selected>2.5+</option>
+          <option value="4.5">4.5+</option>
+          <option value="significant">Significant</option>
+        </select>
+      </div>
+
+      <!-- ── Stats Strip ─────────────────────────────── -->
+      <div class="eq-stats-strip" id="eq-stats-strip">
+        <div class="eq-stat-card" id="stat-total">
+          <span class="eq-stat-num" id="stat-total-num">–</span>
+          <span class="eq-stat-label">Total</span>
+        </div>
+        <div class="eq-stat-card eq-stat-minor" id="stat-minor">
+          <span class="eq-stat-num" id="stat-minor-num">–</span>
+          <span class="eq-stat-label">Minor (&lt;2.5)</span>
+        </div>
+        <div class="eq-stat-card eq-stat-moderate" id="stat-moderate">
+          <span class="eq-stat-num" id="stat-moderate-num">–</span>
+          <span class="eq-stat-label">Moderate (2.5–5)</span>
+        </div>
+        <div class="eq-stat-card eq-stat-danger" id="stat-danger">
+          <span class="eq-stat-num" id="stat-danger-num">–</span>
+          <span class="eq-stat-label">Strong (5+)</span>
+        </div>
+      </div>
+
+      <!-- ── Map ────────────────────────────────────── -->
+      <div class="eq-map-container">
+        <div id="eq-map"></div>
+      </div>
+
+      <!-- ── Loading / Error ────────────────────────── -->
+      <div class="eq-loading" id="eq-loading">
+        <div class="eq-spinner"></div>
+        <p>Fetching latest earthquake data…</p>
+      </div>
+      <div class="eq-error" id="eq-error" style="display:none;">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <p id="eq-error-msg">Could not load data. Check your connection.</p>
+      </div>
+
+      <!-- ── Earthquake List ────────────────────────── -->
+      <div class="eq-list-header" id="eq-list-header" style="display:none;">
+        <h2><i class="fa-solid fa-list"></i> <span id="eq-list-title">Recent Events</span></h2>
+        <span id="eq-list-count" class="eq-list-count"></span>
+      </div>
+      <!-- No results message -->
+      <div class="eq-no-results" id="eq-no-results" style="display:none;">
+        <i class="fa-solid fa-circle-xmark"></i>
+        <p>No earthquakes found for this location &amp; filters.<br>Try a wider radius or different time range.</p>
+      </div>
+      <div class="eq-list" id="eq-list"></div>
+
+    </div>
+  </main>
+
+  <!-- ── Alert Popup (major quakes) ────────────── -->
+  <div class="eq-alert-popup" id="eq-alert-popup" style="display:none;">
+    <div class="eq-alert-content">
+      <i class="fa-solid fa-triangle-exclamation eq-alert-icon"></i>
+      <div class="eq-alert-text">
+        <strong id="eq-alert-title">Major Earthquake Detected!</strong>
+        <p id="eq-alert-body"></p>
+      </div>
+      <button class="eq-alert-close" id="eq-alert-close" aria-label="Dismiss">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Earthquake logic -->
+  <script src="js/earthquake.js"></script>
+</body>
+
+</html>
